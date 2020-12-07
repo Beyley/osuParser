@@ -1,7 +1,7 @@
 package osuparser;
 
 import java.io.*;
-import java.util.Scanner;
+import java.util.*;
 
 public class BeatMap {
     public int fileFormatVersion;
@@ -12,6 +12,7 @@ public class BeatMap {
 
     public Metadata metadata;
     public DifficultySettings difficulty;
+    public List<StoryboardEvent> storyboardEvents;
 
     public static class Metadata {
         public String title;
@@ -21,6 +22,23 @@ public class BeatMap {
 
         Metadata() {
 
+        }
+    }
+
+    public static class StoryboardEvent {
+        public int type;
+        public int startTime;
+        public Object[] parameters;
+
+        public static int imageEvent = 0;
+        public static int videoEvent = 1;
+        public static int breakEvent = 2;
+        public static int backgroundColorEvent = 3;
+
+        StoryboardEvent(int type, int startTime, Object[] parameters) {
+            this.type = type;
+            this.startTime = startTime;
+            this.parameters = parameters;
         }
     }
 
@@ -53,6 +71,7 @@ public class BeatMap {
             returnMap = new BeatMap(Integer.parseInt(versionLine.replaceAll("[^\\d.]", "")));
             returnMap.metadata = new Metadata();
             returnMap.difficulty = new DifficultySettings();
+            returnMap.storyboardEvents = new ArrayList<StoryboardEvent>();
 
             String currentSection = "";
 
@@ -114,6 +133,37 @@ public class BeatMap {
                                 returnMap.difficulty.sliderMultiplier = Double.parseDouble(split[1].strip());
                             } else if (split[0].equals("SliderTickRate")) {
                                 returnMap.difficulty.sliderTickRate = Double.parseDouble(split[1].strip());
+                            }
+                            break;
+                        case "Events":
+                            split = data.split(",");
+
+                            if (Integer.parseInt(split[0]) == StoryboardEvent.imageEvent) {
+                                String[] imagePath = new String[1];
+                                imagePath[0] = split[2].replaceAll("\"", "");
+
+                                returnMap.storyboardEvents.add(new StoryboardEvent(StoryboardEvent.imageEvent,
+                                        Integer.parseInt(split[1]), imagePath));
+                            } else if (Integer.parseInt(split[0]) == StoryboardEvent.videoEvent) {
+                                String[] videoPath = new String[1];
+                                videoPath[0] = split[2].replaceAll("\"", "");
+
+                                returnMap.storyboardEvents.add(new StoryboardEvent(StoryboardEvent.videoEvent,
+                                        Integer.parseInt(split[1]), videoPath));
+                            } else if (Integer.parseInt(split[0]) == StoryboardEvent.breakEvent) {
+                                Integer[] endTime = new Integer[1];
+                                endTime[0] = Integer.parseInt(split[2]);
+
+                                returnMap.storyboardEvents.add(new StoryboardEvent(StoryboardEvent.breakEvent,
+                                        Integer.parseInt(split[1]), endTime));
+                            } else if (Integer.parseInt(split[0]) == StoryboardEvent.backgroundColorEvent) {
+                                Integer[] rgbValues = new Integer[3];
+                                rgbValues[0] = Integer.parseInt(split[2]);
+                                rgbValues[1] = Integer.parseInt(split[3]);
+                                rgbValues[2] = Integer.parseInt(split[4]);
+
+                                returnMap.storyboardEvents.add(new StoryboardEvent(StoryboardEvent.backgroundColorEvent,
+                                        Integer.parseInt(split[1]), rgbValues));
                             }
                             break;
                     }

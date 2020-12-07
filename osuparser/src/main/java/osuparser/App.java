@@ -1,5 +1,7 @@
 package osuparser;
 
+import osuparser.BeatMap.StoryboardEvent;
+
 public class App {
     public static void main(String[] args) {
         BeatMap parsedMap = BeatMap.parseOsuFile(
@@ -19,5 +21,12 @@ public class App {
         System.out.println(parsedMap.difficulty.overallDifficulty);
         System.out.println(parsedMap.difficulty.sliderMultiplier);
         System.out.println(parsedMap.difficulty.sliderTickRate);
+
+        for (StoryboardEvent event : parsedMap.storyboardEvents) {
+            System.out.println(event.type);
+            System.out.println(event.startTime);
+            for (Object param : event.parameters)
+                System.out.println(param);
+        }
     }
 }
