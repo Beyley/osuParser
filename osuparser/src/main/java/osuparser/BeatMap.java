@@ -13,6 +13,7 @@ public class BeatMap {
     public Metadata metadata;
     public DifficultySettings difficulty;
     public List<StoryboardEvent> storyboardEvents;
+    public List<TimingPoint> timingPoints;
 
     public static class Metadata {
         public String title;
@@ -22,6 +23,18 @@ public class BeatMap {
 
         Metadata() {
 
+        }
+    }
+
+    public static class TimingPoint {
+        public double time;
+        public double fourthNoteDelay;
+        public double bpm;
+
+        TimingPoint(double time, double fourthNoteDelay) {
+            this.time = time;
+            this.fourthNoteDelay = fourthNoteDelay;
+            this.bpm = (double) 60000.0 / (double) this.fourthNoteDelay;
         }
     }
 
@@ -53,6 +66,67 @@ public class BeatMap {
         }
     }
 
+    public static class HitObject {
+        public static int circleObjectType = 1;
+        public static int sliderObjectType = 2;
+        public static int spinnerObjectType = 3;
+
+        public static class Position {
+            public int x;
+            public int y;
+
+            Position(int x, int y) {
+                this.x = x;
+                this.y = y;
+            }
+        }
+
+        public Position pos;
+        public int time;
+        public int objectType;
+        public int hitSound;
+        public char sliderType;
+        public List<Position> sliderAnchors;
+        public int amountOfReverse;
+        public int sliderLength;
+        public boolean newCombo;
+
+        HitObject(int x, int y, int time, int objectType, int hitSound) {
+            this.pos = new Position(x, y);
+            this.time = time;
+
+            if (objectType > 3) {
+                this.objectType = objectType - 4;
+                this.newCombo = false;
+            } else {
+                this.objectType = objectType;
+                this.newCombo = false;
+            }
+
+            this.hitSound = hitSound;
+        }
+
+        HitObject(int x, int y, int time, int objectType, int hitSound, char sliderType, List<Position> sliderAnchors,
+                int amountOfReverse, int sliderLength) {
+            this.pos = new Position(x, y);
+            this.time = time;
+
+            if (objectType > 3) {
+                this.objectType = objectType - 4;
+                this.newCombo = false;
+            } else {
+                this.objectType = objectType;
+                this.newCombo = false;
+            }
+
+            this.hitSound = hitSound;
+            this.sliderType = sliderType;
+            this.sliderAnchors = sliderAnchors;
+            this.amountOfReverse = amountOfReverse;
+            this.sliderLength = sliderLength;
+        }
+    }
+
     BeatMap(int version) {
         this.fileFormatVersion = version;
         System.out.println(this.fileFormatVersion);
@@ -72,6 +146,7 @@ public class BeatMap {
             returnMap.metadata = new Metadata();
             returnMap.difficulty = new DifficultySettings();
             returnMap.storyboardEvents = new ArrayList<StoryboardEvent>();
+            returnMap.timingPoints = new ArrayList<TimingPoint>();
 
             String currentSection = "";
 
@@ -165,6 +240,11 @@ public class BeatMap {
                                 returnMap.storyboardEvents.add(new StoryboardEvent(StoryboardEvent.backgroundColorEvent,
                                         Integer.parseInt(split[1]), rgbValues));
                             }
+                            break;
+                        case "TimingPoints":
+                            split = data.split(",");
+                            returnMap.timingPoints
+                                    .add(new TimingPoint(Double.parseDouble(split[0]), Double.parseDouble(split[1])));
                             break;
                     }
                 }
