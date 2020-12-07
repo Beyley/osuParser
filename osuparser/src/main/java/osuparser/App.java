@@ -1,6 +1,7 @@
 package osuparser;
 
 import osuparser.BeatMap.*;
+import osuparser.BeatMap.HitObject.Position;
 
 public class App {
     public static void main(String[] args) {
@@ -38,6 +39,19 @@ public class App {
             System.out.println(timingPoint.time);
             System.out.println(timingPoint.fourthNoteDelay);
             System.out.println(timingPoint.bpm);
+        }
+
+        System.out.println("Hit Objects");
+        for (HitObject hitObject : parsedMap.hitObjects) {
+            System.out.println(hitObject.pos.x + ":" + hitObject.pos.y);
+            System.out.println(hitObject.time);
+            System.out.println(hitObject.objectType);
+            System.out.println(hitObject.hitSound);
+
+            if (hitObject.objectType == HitObject.sliderObjectType)
+                for (Position anchor : hitObject.sliderAnchors) {
+                    System.out.println(anchor.x + ":" + anchor.y);
+                }
         }
     }
 }

@@ -3,6 +3,8 @@ package osuparser;
 import java.io.*;
 import java.util.*;
 
+import osuparser.BeatMap.HitObject.Position;
+
 public class BeatMap {
     public int fileFormatVersion;
 
@@ -14,6 +16,7 @@ public class BeatMap {
     public DifficultySettings difficulty;
     public List<StoryboardEvent> storyboardEvents;
     public List<TimingPoint> timingPoints;
+    public List<HitObject> hitObjects;
 
     public static class Metadata {
         public String title;
@@ -91,8 +94,8 @@ public class BeatMap {
         public int sliderLength;
         public boolean newCombo;
 
-        HitObject(int x, int y, int time, int objectType, int hitSound) {
-            this.pos = new Position(x, y);
+        HitObject(Position pos, int time, int objectType, int hitSound) {
+            this.pos = pos;
             this.time = time;
 
             if (objectType > 3) {
@@ -106,9 +109,9 @@ public class BeatMap {
             this.hitSound = hitSound;
         }
 
-        HitObject(int x, int y, int time, int objectType, int hitSound, char sliderType, List<Position> sliderAnchors,
+        HitObject(Position pos, int time, int objectType, int hitSound, char sliderType, List<Position> sliderAnchors,
                 int amountOfReverse, int sliderLength) {
-            this.pos = new Position(x, y);
+            this.pos = pos;
             this.time = time;
 
             if (objectType > 3) {
@@ -147,6 +150,7 @@ public class BeatMap {
             returnMap.difficulty = new DifficultySettings();
             returnMap.storyboardEvents = new ArrayList<StoryboardEvent>();
             returnMap.timingPoints = new ArrayList<TimingPoint>();
+            returnMap.hitObjects = new ArrayList<HitObject>();
 
             String currentSection = "";
 
@@ -245,6 +249,33 @@ public class BeatMap {
                             split = data.split(",");
                             returnMap.timingPoints
                                     .add(new TimingPoint(Double.parseDouble(split[0]), Double.parseDouble(split[1])));
+                            break;
+                        case "HitObjects":
+                            split = data.split(",");
+                            if (split.length > 6) {
+                                String[] newSplit = split[5].strip().split("\\|");
+
+                                List<Position> tempAnchorArray = new ArrayList<Position>();
+
+                                for (int i = 1; i < newSplit.length; i++) {
+                                    String[] newerSplit = newSplit[i].split(":");
+                                    tempAnchorArray.add(new Position(Integer.parseInt(newerSplit[0]),
+                                            Integer.parseInt(newerSplit[1])));
+                                }
+
+                                returnMap.hitObjects.add(new HitObject(
+                                        new HitObject.Position(Integer.parseInt(split[0]), Integer.parseInt(split[1])),
+                                        Integer.parseInt(split[2]), Integer.parseInt(split[3]),
+                                        Integer.parseInt(split[4]), newSplit[0].charAt(0), tempAnchorArray,
+                                        Integer.parseInt(split[6]), Integer.parseInt(split[7])));
+                            } else {
+                                returnMap.hitObjects
+                                        .add(new HitObject(
+                                                new HitObject.Position(Integer.parseInt(split[0]),
+                                                        Integer.parseInt(split[1])),
+                                                Integer.parseInt(split[2]), Integer.parseInt(split[3]),
+                                                Integer.parseInt(split[4])));
+                            }
                             break;
                     }
                 }
