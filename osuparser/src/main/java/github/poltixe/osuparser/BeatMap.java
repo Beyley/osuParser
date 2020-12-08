@@ -75,26 +75,26 @@ public class BeatMap {
         public static int spinnerObjectType = 3;
 
         public static class Position {
-            public int x;
-            public int y;
+            public double x;
+            public double y;
 
-            Position(int x, int y) {
+            Position(double x, double y) {
                 this.x = x;
                 this.y = y;
             }
         }
 
         public Position pos;
-        public int time;
+        public double time;
         public int objectType;
         public int hitSound;
         public char sliderType;
         public List<Position> sliderAnchors;
         public int amountOfReverse;
-        public int sliderLength;
+        public double sliderLength;
         public boolean newCombo;
 
-        HitObject(Position pos, int time, int objectType, int hitSound) {
+        HitObject(Position pos, double time, int objectType, int hitSound) {
             this.pos = pos;
             this.time = time;
 
@@ -109,8 +109,8 @@ public class BeatMap {
             this.hitSound = hitSound;
         }
 
-        HitObject(Position pos, int time, int objectType, int hitSound, char sliderType, List<Position> sliderAnchors,
-                int amountOfReverse, int sliderLength) {
+        HitObject(Position pos, double time, int objectType, int hitSound, char sliderType,
+                List<Position> sliderAnchors, int amountOfReverse, double sliderLength) {
             this.pos = pos;
             this.time = time;
 
@@ -130,7 +130,7 @@ public class BeatMap {
         }
     }
 
-    BeatMap(int version) {
+    public BeatMap(int version) {
         this.fileFormatVersion = version;
         System.out.println(this.fileFormatVersion);
     }
@@ -264,17 +264,17 @@ public class BeatMap {
                                 }
 
                                 returnMap.hitObjects.add(new HitObject(
-                                        new HitObject.Position(Integer.parseInt(split[0]), Integer.parseInt(split[1])),
-                                        Integer.parseInt(split[2]), Integer.parseInt(split[3]),
+                                        new HitObject.Position(Double.parseDouble(split[0]),
+                                                Double.parseDouble(split[1])),
+                                        Double.parseDouble(split[2]), Integer.parseInt(split[3]),
                                         Integer.parseInt(split[4]), newSplit[0].charAt(0), tempAnchorArray,
-                                        Integer.parseInt(split[6]), Integer.parseInt(split[7])));
+                                        Integer.parseInt(split[6]), Double.parseDouble(split[7])));
                             } else {
-                                returnMap.hitObjects
-                                        .add(new HitObject(
-                                                new HitObject.Position(Integer.parseInt(split[0]),
-                                                        Integer.parseInt(split[1])),
-                                                Integer.parseInt(split[2]), Integer.parseInt(split[3]),
-                                                Integer.parseInt(split[4])));
+                                returnMap.hitObjects.add(new HitObject(
+                                        new HitObject.Position(Double.parseDouble(split[0]),
+                                                Integer.parseInt(split[1])),
+                                        Double.parseDouble(split[2]), Integer.parseInt(split[3]),
+                                        Integer.parseInt(split[4])));
                             }
                             break;
                     }
