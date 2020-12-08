@@ -190,13 +190,29 @@ public class BeatMap {
                             split = data.split(":");
 
                             if (split[0].equals("Title")) {
-                                returnMap.metadata.title = split[1].strip();
+                                if (split.length > 2) {
+                                    returnMap.metadata.title = split[1].strip();
+                                } else {
+                                    returnMap.metadata.title = "";
+                                }
                             } else if (split[0].equals("Artist")) {
-                                returnMap.metadata.artist = split[1].strip();
+                                if (split.length > 2) {
+                                    returnMap.metadata.artist = split[1].strip();
+                                } else {
+                                    returnMap.metadata.artist = "";
+                                }
                             } else if (split[0].equals("Creator")) {
-                                returnMap.metadata.creator = split[1].strip();
+                                if (split.length > 2) {
+                                    returnMap.metadata.creator = split[1].strip();
+                                } else {
+                                    returnMap.metadata.creator = "";
+                                }
                             } else if (split[0].equals("Version")) {
-                                returnMap.metadata.diffName = split[1].strip();
+                                if (split.length > 2) {
+                                    returnMap.metadata.diffName = split[1].strip();
+                                } else {
+                                    returnMap.metadata.diffName = "";
+                                }
                             }
                             break;
                         case "Difficulty":
