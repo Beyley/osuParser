@@ -1,12 +1,11 @@
-package osuparser;
+package github.poltixe.osuparser;
 
-import osuparser.BeatMap.*;
-import osuparser.BeatMap.HitObject.Position;
+import github.poltixe.osuparser.BeatMap.*;
+import github.poltixe.osuparser.BeatMap.HitObject.Position;
 
 public class App {
     public static void main(String[] args) {
-        BeatMap parsedMap = BeatMap.parseOsuFile(
-                "C:\\Users\\Ep1c_M1n10n\\Desktop\\PROJECTS\\PROGRAMMING\\JAVA\\osuParser\\Ai Otsuka - Sakuranbo (Echo49) [Hard].osu");
+        BeatMap parsedMap = BeatMap.parseOsuFile(args[0]);
 
         System.out.println("General Data");
         System.out.println(parsedMap.audioFilename);

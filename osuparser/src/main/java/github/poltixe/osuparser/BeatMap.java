@@ -1,9 +1,9 @@
-package osuparser;
+package github.poltixe.osuparser;
 
 import java.io.*;
 import java.util.*;
 
-import osuparser.BeatMap.HitObject.Position;
+import github.poltixe.osuparser.BeatMap.HitObject.Position;
 
 public class BeatMap {
     public int fileFormatVersion;
