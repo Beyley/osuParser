@@ -12,6 +12,15 @@ public class BeatMap {
     public String audioHash;
     public int previewTime;
 
+    private int timeOfFirstObject;
+    private int timeOfLastObject;
+    private int lengthOfAllBreaks;
+
+    public int length;
+    public int drainTime;
+
+    public double oldStarRating;
+
     public Metadata metadata;
     public DifficultySettings difficulty;
     public List<StoryboardEvent> storyboardEvents;
@@ -132,7 +141,6 @@ public class BeatMap {
 
     public BeatMap(int version) {
         this.fileFormatVersion = version;
-        System.out.println(this.fileFormatVersion);
     }
 
     public static BeatMap parseOsuFile(String filename) {
@@ -298,6 +306,25 @@ public class BeatMap {
 
                 // System.out.println(data);
             }
+
+            returnMap.timeOfFirstObject = (int) returnMap.hitObjects.get(0).time;
+            returnMap.timeOfLastObject = (int) returnMap.hitObjects.get(returnMap.hitObjects.size() - 1).time;
+
+            for (StoryboardEvent event : returnMap.storyboardEvents) {
+                if (event.type == StoryboardEvent.breakEvent) {
+                    returnMap.lengthOfAllBreaks += (int) event.parameters[0] - event.startTime;
+                }
+            }
+
+            returnMap.drainTime = returnMap.timeOfLastObject - returnMap.timeOfFirstObject
+                    - returnMap.lengthOfAllBreaks;
+
+            returnMap.length = returnMap.timeOfLastObject - returnMap.timeOfFirstObject;
+
+            returnMap.oldStarRating = (returnMap.difficulty.hpDrainRate + returnMap.difficulty.overallDifficulty
+                    + returnMap.difficulty.circleSize
+                    + MathHelper.clamp(returnMap.hitObjects.size() / (returnMap.drainTime / 1000) * 8f, 0f, 16f)) / 38f
+                    * 5f;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
