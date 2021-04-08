@@ -32,8 +32,7 @@ class getMapsForRank {
             System.out.println("File created: " + myFile.getName());
         }
 
-        final Path rootDir = Paths.get(
-                "C:\\Users\\Ep1c_M1n10n\\Desktop\\PROJECTS\\PROGRAMMING\\C#\\osu!2007 server switcher\\osu!\\bin\\x86\\Debug\\Songs");
+        final Path rootDir = Paths.get("/media/beyley/OsuSings/OsuSings");
 
         // Walk thru mainDir directory
         Files.walkFileTree(rootDir, new FileVisitor<Path>() {
@@ -44,8 +43,6 @@ class getMapsForRank {
             public FileVisitResult preVisitDirectory(Path path, BasicFileAttributes atts) throws IOException {
 
                 boolean matches = pattern.matcher(path.toString()).matches();
-
-                // TODO: Put here your business logic when matches equals true/false
 
                 return (matches) ? FileVisitResult.CONTINUE : FileVisitResult.SKIP_SUBTREE;
             }
@@ -58,9 +55,10 @@ class getMapsForRank {
                     String filename = path.getFileName().toString();
                     String nameWithoutExtension = filename.substring(0, filename.length() - 4);
 
-                    BeatMap parsedMap = BeatMap.parseOsuFile(path.toAbsolutePath().toString());
+                    // BeatMap parsedMap = BeatMap.parseOsuFile(path.toAbsolutePath().toString());
 
-                    String hash = "";
+                    String md5 = "";
+                    String sha256 = "";
 
                     try {
                         MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -90,18 +88,46 @@ class getMapsForRank {
                             sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
                         }
 
-                        hash = sb.toString();
+                        md5 = sb.toString();
                     } catch (NoSuchAlgorithmException e) {
+                    }
+
+                    try {
+                        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+                        // Get file input stream for reading the file content
+                        FileInputStream fis = new FileInputStream(path.toAbsolutePath().toString());
+
+                        // Create byte array to read data in chunks
+                        byte[] byteArray = new byte[1024];
+                        int bytesCount = 0;
+
+                        // Read file data and update in message digest
+                        while ((bytesCount = fis.read(byteArray)) != -1) {
+                            digest.update(byteArray, 0, bytesCount);
+                        }
+
+                        // close the stream; We don't need it now.
+                        fis.close();
+
+                        // Get the hash's bytes
+                        byte[] bytes = digest.digest();
+
+                        // This bytes[] has bytes in decimal format;
+                        // Convert it to hexadecimal format
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < bytes.length; i++) {
+                            sb.append(Integer.toString((bytes[i] & 0xff) + 0x100, 16).substring(1));
+                        }
+
+                        sha256 = sb.toString();
+                    } catch (NoSuchAlgorithmException e) {
+                        System.out.println("pain");
                     }
 
                     FileWriter fileWriter = new FileWriter("rankeddatabase.txt", true); // Set true for append mode
                     PrintWriter printWriter = new PrintWriter(fileWriter);
-                    printWriter.println(parsedMap.metadata.artist + ":" + parsedMap.metadata.title + ":"
-                            + parsedMap.metadata.diffName + ":" + parsedMap.metadata.creator + ":" + hash + ":"
-                            + parsedMap.oldStarRating + ":" + parsedMap.difficulty.circleSize + ":"
-                            + parsedMap.difficulty.hpDrainRate + ":" + parsedMap.difficulty.overallDifficulty + ":"
-                            + parsedMap.difficulty.sliderMultiplier + ":" + parsedMap.difficulty.sliderTickRate + ":"
-                            + parsedMap.timingPoints.get(0).bpm + ":" + parsedMap.length + ":" + parsedMap.drainTime);
+                    printWriter.print(md5 + ":" + sha256 + "\\");
                     printWriter.close();
                 }
 
